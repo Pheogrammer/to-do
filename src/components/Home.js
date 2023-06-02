@@ -48,7 +48,7 @@ function Home() {
   return (
     <div>
       <div className="container">
-        <div className="row">
+        <div className="row mt-5">
           <div className="col">
             <div className="card">
               <div className="card-body text-center mt-5">
@@ -57,7 +57,7 @@ function Home() {
             </div>
           </div>
         </div>
-        <div className="row">
+        <div className="row mt-3">
           <div className="col">
             <div className="card">
               <div className="card-body text-center">
@@ -71,7 +71,7 @@ function Home() {
             </div>
           </div>
         </div>
-        <div className="row">
+        <div className="row mt-3">
           <div className="col">
             <div className="card">
               <div className="card-body text-center">
