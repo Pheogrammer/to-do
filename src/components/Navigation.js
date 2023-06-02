@@ -5,7 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 const Navigation = () => {
   const location = useLocation();
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-light px-5">
+    <nav className="navbar navbar-expand-lg navbar-dark bg-primary px-5">
       <Link className="navbar-brand" to="/">The Notifier</Link>
       <button
         className="navbar-toggler"

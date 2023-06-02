@@ -3,7 +3,7 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Roboto';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: rgb(212, 212, 212) !important;
+  background-color: rgb(102, 101, 101) !important;
 
 }
 
@@ -14,5 +14,9 @@ code {
 
 .navbar-nav .nav-item.active .nav-link {
   background-color: #a9c9e9;
-  color: #242b1c;
+  color: #222222;
+}
+
+.card{
+  background-color: blanchedalmond;
 }
