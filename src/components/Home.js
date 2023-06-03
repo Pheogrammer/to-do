@@ -126,7 +126,7 @@ function Home() {
         handleAddModalClose();
         console.error('Failed to add todo:', error);
       }
-    }else{
+    } else {
       console.log('failed to add new todo in the first step');
     }
   };
@@ -139,6 +139,7 @@ function Home() {
       clearInterval(interval);
     };
   }, []);
+
   const handleMarkAsDone = async (id) => {
     if (selectedTodo) {
       try {
@@ -171,6 +172,42 @@ function Home() {
         }
       } catch (error) {
         console.error('Failed to mark todo as done:', error);
+      }
+    }
+  };
+
+  const handleReviveTodo = async (id) => {
+    if (selectedTodo) {
+      try {
+        console.log('Marking as undone:', selectedTodo);
+
+        const response = await axios.put(
+          `${process.env.REACT_APP_URL}/${process.env.REACT_APP_NAME}/${id}`,
+          {
+            ...selectedTodo.value,
+            completed: false,
+          },
+          {
+            auth: {
+              username: process.env.REACT_APP_USERNAME,
+              password: process.env.REACT_APP_PASSWORD,
+            },
+          }
+        );
+
+        if (response.status === 200) {
+          console.log('Todo marked as undone successfully!');
+          fetchData();
+          handleModalClose();
+        } else {
+          console.error(
+            'Failed to mark todo as undone:',
+            response.status,
+            response.statusText
+          );
+        }
+      } catch (error) {
+        console.error('Failed to mark todo as undone:', error);
       }
     }
   };
@@ -498,9 +535,13 @@ function Home() {
           <Button variant="primary" onClick={() => handleUpdateTodo(selectedTodo?.value.id)}>
             Update
           </Button>
-          {!selectedTodo?.value.completed && (
+          {!selectedTodo?.value.completed ? (
             <Button variant="success" onClick={() => handleMarkAsDone(selectedTodo?.value.id)}>
               Mark as Done
+            </Button>
+          ) : (
+            <Button variant="warning" onClick={() => handleReviveTodo(selectedTodo?.value.id)}>
+              Mark as Pending
             </Button>
           )}
           <Button variant="danger" onClick={() => handleDeleteTodo(selectedTodo?.value.id)}>
