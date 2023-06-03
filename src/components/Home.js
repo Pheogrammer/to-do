@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Form } from 'react-bootstrap';
+import { Modal, Button, Form, Alert } from 'react-bootstrap';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -11,14 +11,18 @@ function Home() {
   const [currentTime, setCurrentTime] = useState(
     new Date().toLocaleTimeString()
   );
-
+  const deleteMessage = () => {
+    setTimeout(() => {
+      setMessage(null);
+    }, 6000);
+  };
   const [newTodo, setNewTodo] = useState({
     title: '',
     dueDate: '',
     done: false,
     description: '',
   });
-
+  const [message, setMessage] = useState(null);
   useEffect(() => {
     fetchData();
   }, []);
@@ -113,6 +117,8 @@ function Home() {
           };
           setallTodoItems([...allTodoItems, newTodoItem]);
           handleAddModalClose();
+          setMessage('Todo added successfully!');
+          deleteMessage();
           fetchData();
         } else {
           console.error(
@@ -121,6 +127,8 @@ function Home() {
             response.statusText
           );
           handleAddModalClose();
+          setMessage('Failed to add todo.');
+          deleteMessage();
         }
       } catch (error) {
         handleAddModalClose();
@@ -163,12 +171,17 @@ function Home() {
           console.log('Todo marked as done successfully!');
           fetchData();
           handleModalClose();
+          setMessage('Todo marked as done!');
+          deleteMessage();
         } else {
           console.error(
             'Failed to mark todo as done:',
             response.status,
             response.statusText
           );
+          handleModalClose();
+          setMessage('Failed to mark todo as done.');
+          deleteMessage();
         }
       } catch (error) {
         console.error('Failed to mark todo as done:', error);
@@ -198,6 +211,8 @@ function Home() {
         if (response.status === 200) {
           console.log('Todo marked as undone successfully!');
           fetchData();
+          setMessage('Todo Marked as Unfinished successfully!');
+          deleteMessage();
           handleModalClose();
         } else {
           console.error(
@@ -205,6 +220,9 @@ function Home() {
             response.status,
             response.statusText
           );
+          setMessage('Failed to mark Todo as Unfinished!');
+          deleteMessage();
+          handleModalClose();
         }
       } catch (error) {
         console.error('Failed to mark todo as undone:', error);
@@ -232,6 +250,8 @@ function Home() {
         if (response.status === 200) {
           console.log('Todo updated successfully!');
           fetchData();
+          setMessage('Todo Updated successfully!');
+          deleteMessage();
           handleModalClose();
         } else {
           console.error(
@@ -239,6 +259,9 @@ function Home() {
             response.status,
             response.statusText
           );
+          setMessage('Failed to update Todo!');
+          deleteMessage();
+          handleModalClose();
         }
       } catch (error) {
         console.error('Failed to update todo:', error);
@@ -265,6 +288,8 @@ function Home() {
         if (response.status === 200) {
           console.log('Todo item deleted successfully!');
           fetchData();
+          setMessage('Todo deleted successfully!');
+          deleteMessage();
           handleModalClose();
         } else {
           console.error(
@@ -272,6 +297,9 @@ function Home() {
             response.status,
             response.statusText
           );
+          setMessage('Failed to delete Todo!');
+          deleteMessage();
+          handleModalClose();
         }
       } catch (error) {
         console.error('Failed to delete todo item:', error);
@@ -382,6 +410,8 @@ function Home() {
             </div>
           </div>
         </div>
+        {message && <Alert variant="success">{message}</Alert>}
+
         <div className="row mt-3">
           <div className="col">
             <div className="card">
