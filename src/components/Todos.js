@@ -4,24 +4,10 @@ import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 
 function Todos() {
-    const currentDate = new Date();
-    const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString());
-
-    const [todoItems, setTodoItems] = useState([]);
-
+    const [AlltodoItems, setAllTodoItems] = useState([]);
     const [selectedTodo, setSelectedTodo] = useState(null);
     const [showAddModal, setShowAddModal] = useState(false);
     const [newTodo, setNewTodo] = useState({ title: '', dueDate: '', done: false, description: '' });
-
-    useEffect(() => {
-        const timer = setInterval(() => {
-            setCurrentTime(new Date().toLocaleTimeString());
-        }, 1000);
-
-        return () => {
-            clearInterval(timer);
-        };
-    }, []);
 
     useEffect(() => {
         fetchData();
@@ -42,9 +28,8 @@ function Todos() {
             if (response.status === 200) {
                 const data = response.data.entries;
                 console.log(data);
-                setTodoItems(data);
+                setAllTodoItems(data);
             } else {
-                console.log('Failed: ' + response.data);
                 console.error('Failed to fetch todo items:', response.status, response.statusText);
             }
         } catch (error) {
@@ -52,16 +37,12 @@ function Todos() {
         }
     };
 
-
     const handleMarkAsDone = () => {
         if (selectedTodo) {
-            const updatedTodos = todoItems.map((todo) => {
-                if (todo.id === selectedTodo.id) {
-                    return { ...todo, done: true };
-                }
-                return todo;
-            });
-            setTodoItems(updatedTodos);
+            const updatedTodos = AlltodoItems.map((todo) =>
+                todo.id === selectedTodo.id ? { ...todo, done: true } : todo
+            );
+            setAllTodoItems(updatedTodos);
             setSelectedTodo(null);
         }
     };
@@ -117,11 +98,10 @@ function Todos() {
                         dueDate: newTodo.dueDate,
                         done: newTodo.done,
                     };
-                    setTodoItems([...todoItems, newTodoItem]);
+                    setAllTodoItems([...AlltodoItems, newTodoItem]);
                     handleAddModalClose();
                     fetchData();
                 } else {
-                    console.log('Failed: ' + response);
                     console.error('Failed to add todo:', response.status, response.statusText);
                 }
             } catch (error) {
@@ -130,7 +110,41 @@ function Todos() {
         }
     };
 
-    const AlltodoItems = todoItems;
+    const generateTableRows = () => {
+        const sortedItems = AlltodoItems.sort((a, b) => {
+            const dateA = new Date(a.value.created);
+            const dateB = new Date(b.value.created);
+            return dateA - dateB;
+        });
+
+        return sortedItems.map((item) => {
+            const createdDate = new Date(item.value.created);
+            const currentDate = new Date();
+            const timeDiff = Math.abs(currentDate - createdDate);
+            const daysPassed = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+
+            const formattedDate = createdDate.toLocaleString('en-GB', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+            });
+
+            return (
+                <tr key={item.key}>
+                    <td>{item.value.title}</td>
+                    <td>{formattedDate}</td>
+                    <td>{item.value.completed ? 'Done' : 'Pending'}</td>
+                    <td>{daysPassed}</td>
+                    <td>
+                        <Button onClick={() => handleModalOpen(item)}>Manage</Button>
+                    </td>
+                </tr>
+            );
+        });
+    };
+
 
     return (
         <div>
@@ -160,32 +174,6 @@ function Todos() {
                                                 Add Todo
                                             </Button>
                                         </div>
-
-                                        <div className="card-body">
-                                            <table className="table">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Title</th>
-                                                        <th>Due Date</th>
-                                                        <th>Status</th>
-                                                        <th>Manage</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {todoItems.map((item) => (
-                                                        <tr key={item.key}>
-                                                            <td>{item.value.title}</td>
-                                                            <td>{item.value.created}</td>
-                                                            <td>{item.value.completed ? 'Done' : 'Pending'}</td>
-                                                            <td>
-                                                                <Button onClick={() => handleModalOpen(item)}>Manage</Button>
-                                                            </td>
-                                                        </tr>
-                                                    ))}
-
-                                                </tbody>
-                                            </table>
-                                        </div>
                                     </div>
                                 ) : (
                                     <div>
@@ -197,6 +185,21 @@ function Todos() {
                                         </div>
                                     </div>
                                 )}
+                                <div className="card-body">
+                                    <table className="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Title</th>
+                                                <th>Due Date</th>
+                                                <th>Status</th>
+                                                <th>Days Passed</th> {/* New column */}
+                                                <th>Manage</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>{generateTableRows()}</tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -291,5 +294,4 @@ function Todos() {
         </div>
     );
 }
-
 export default Todos;
