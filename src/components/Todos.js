@@ -7,7 +7,12 @@ function Todos() {
     const [AlltodoItems, setAllTodoItems] = useState([]);
     const [selectedTodo, setSelectedTodo] = useState(null);
     const [showAddModal, setShowAddModal] = useState(false);
-    const [newTodo, setNewTodo] = useState({ title: '', dueDate: '', done: false, description: '' });
+    const [newTodo, setNewTodo] = useState({
+        title: '',
+        dueDate: '',
+        done: false,
+        description: '',
+    });
 
     useEffect(() => {
         fetchData();
@@ -30,7 +35,11 @@ function Todos() {
                 console.log(data);
                 setAllTodoItems(data);
             } else {
-                console.error('Failed to fetch todo items:', response.status, response.statusText);
+                console.error(
+                    'Failed to fetch todo items:',
+                    response.status,
+                    response.statusText
+                );
             }
         } catch (error) {
             console.error('Failed to fetch todo items:', error);
@@ -93,17 +102,57 @@ function Todos() {
                     console.log('Todo added successfully!');
                     const newTodoItem = {
                         id: todoId,
-                        title: newTodo.title,
-                        description: newTodo.description,
+                        value: {
+                            title: newTodo.title,
+                            description: newTodo.description,
+                            completed: newTodo.done,
+                            created: new Date().toISOString(),
+                        },
                     };
                     setAllTodoItems([...AlltodoItems, newTodoItem]);
                     handleAddModalClose();
                     fetchData();
                 } else {
-                    console.error('Failed to add todo:', response.status, response.statusText);
+                    console.error(
+                        'Failed to add todo:',
+                        response.status,
+                        response.statusText
+                    );
                 }
             } catch (error) {
                 console.error('Failed to add todo:', error);
+            }
+        }
+    };
+
+    const handleUpdateTodo = async (id) => {
+        if (selectedTodo) {
+            try {
+                console.log('Updating todo:', selectedTodo);
+
+                const response = await axios.put(
+                    `https://dev.hisptz.com/dhis2/api/dataStore/${process.env.REACT_APP_NAME}/${id}`,
+                    selectedTodo.value,
+                    {
+                        auth: {
+                            username: process.env.REACT_APP_USERNAME,
+                            password: process.env.REACT_APP_PASSWORD,
+                        },
+                    }
+                );
+
+                if (response.status === 200) {
+                    console.log('Todo updated successfully!');
+                    fetchData();
+                } else {
+                    console.error(
+                        'Failed to update todo:',
+                        response.status,
+                        response.statusText
+                    );
+                }
+            } catch (error) {
+                console.error('Failed to update todo:', error);
             }
         }
     };
@@ -130,19 +179,20 @@ function Todos() {
             });
 
             return (
-                <tr key={item.key}>
+                <tr key={item.id}>
                     <td>{index + 1}</td>
                     <td>{item.value.title}</td>
                     <td>{formattedDate}</td>
-                    <td>{item.value.completed ? 'Done' : 'Pending'}</td>
+                    <td>{item.value.completed ? 'Finished' : 'Pending'}</td>
                     <td>{daysPassed}</td>
                     <td>
-                        <Button onClick={() => handleModalOpen(item)}>Manage</Button>
+                        <Button onClick={() => handleModalOpen(item)}>Details</Button>
                     </td>
                 </tr>
             );
         });
     };
+
 
     return (
         <div>
@@ -164,12 +214,13 @@ function Todos() {
                             <div className="text-center mt-3">
                                 {AlltodoItems.length > 0 ? (
                                     <div className="card-head row">
-                                        <div className="col">
-                                            <h4>Here are what you have to accomplish today!</h4>
-                                        </div>
+                                        <div className="col"></div>
                                         <div className="col-md-4">
-                                            <Button variant="primary" onClick={handleAddModalOpen}>
-                                                Add Todo
+                                            <Button
+                                                variant="success"
+                                                onClick={handleAddModalOpen}
+                                            >
+                                                Add New Todo Task
                                             </Button>
                                         </div>
                                     </div>
@@ -210,39 +261,27 @@ function Todos() {
                 </Modal.Header>
                 <Modal.Body>
                     <Form>
-                        <Form.Group controlId="formTitle">
+                        <Form.Group controlId="formTitle" className="mt-3">
                             <Form.Label>Title</Form.Label>
                             <Form.Control
                                 type="text"
                                 placeholder="Enter title"
                                 value={newTodo.title}
-                                onChange={(e) => setNewTodo({ ...newTodo, title: e.target.value })}
+                                onChange={(e) =>
+                                    setNewTodo({ ...newTodo, title: e.target.value })
+                                }
                             />
                         </Form.Group>
-                        <Form.Group controlId="formDescription">
+                        <Form.Group controlId="formDescription" className="mt-3">
                             <Form.Label>Description</Form.Label>
                             <Form.Control
                                 as="textarea"
                                 rows={3}
                                 placeholder="Enter description"
                                 value={newTodo.description}
-                                onChange={(e) => setNewTodo({ ...newTodo, description: e.target.value })}
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="formDueDate">
-                            <Form.Label>Due Date</Form.Label>
-                            <Form.Control
-                                type="date"
-                                value={newTodo.dueDate}
-                                onChange={(e) => setNewTodo({ ...newTodo, dueDate: e.target.value })}
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="formDone">
-                            <Form.Check
-                                type="checkbox"
-                                label="Done"
-                                checked={newTodo.done}
-                                onChange={(e) => setNewTodo({ ...newTodo, done: e.target.checked })}
+                                onChange={(e) =>
+                                    setNewTodo({ ...newTodo, description: e.target.value })
+                                }
                             />
                         </Form.Group>
                     </Form>
@@ -262,29 +301,62 @@ function Todos() {
                 </Modal.Header>
                 <Modal.Body>
                     <Form>
-                        <Form.Group controlId="formTitle">
+                        <Form.Group controlId="formId" className="mt-3">
+
+                            <Form.Control
+                                type="text"
+                                name="id"
+                                value={selectedTodo?.value.id}
+                                hidden
+                                onChange={(e) =>
+                                    setSelectedTodo({
+                                        ...selectedTodo,
+                                        value: { ...selectedTodo.value, id: e.target.value },
+                                    })
+                                }
+                            />
+                        </Form.Group>
+                        <Form.Group controlId="formTitle" className="mt-3">
                             <Form.Label>Title</Form.Label>
-                            <Form.Control type="text" readOnly value={selectedTodo?.title} />
+                            <Form.Control
+                                type="text"
+                                value={selectedTodo?.value.title}
+                                onChange={(e) =>
+                                    setSelectedTodo({
+                                        ...selectedTodo,
+                                        value: { ...selectedTodo.value, title: e.target.value },
+                                    })
+                                }
+                            />
                         </Form.Group>
-                        <Form.Group controlId="formDescription">
+                        <Form.Group controlId="formDescription" className="mt-3">
                             <Form.Label>Description</Form.Label>
-                            <Form.Control as="textarea" rows={3} readOnly value={selectedTodo?.description} />
-                        </Form.Group>
-                        <Form.Group controlId="formDueDate">
-                            <Form.Label>Due Date</Form.Label>
-                            <Form.Control type="date" readOnly value={selectedTodo?.dueDate} />
-                        </Form.Group>
-                        <Form.Group controlId="formDone">
-                            <Form.Check type="checkbox" label="Done" checked={selectedTodo?.done} readOnly />
+                            <Form.Control
+                                as="textarea"
+                                rows={3}
+                                value={selectedTodo?.value.description}
+                                onChange={(e) =>
+                                    setSelectedTodo({
+                                        ...selectedTodo,
+                                        value: {
+                                            ...selectedTodo.value,
+                                            description: e.target.value,
+                                        },
+                                    })
+                                }
+                            />
                         </Form.Group>
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
-                    {!selectedTodo?.done && (
+                    {!selectedTodo?.value.completed && (
                         <Button variant="success" onClick={handleMarkAsDone}>
                             Mark as Done
                         </Button>
                     )}
+                    <Button variant="primary" onClick={() => handleUpdateTodo(selectedTodo?.value.id)}>
+                        Update
+                    </Button>
                     <Button variant="secondary" onClick={handleModalClose}>
                         Close
                     </Button>
@@ -293,4 +365,5 @@ function Todos() {
         </div>
     );
 }
+
 export default Todos;
