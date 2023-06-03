@@ -125,7 +125,15 @@ function Home() {
       }
     }
   };
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(new Date().toLocaleTimeString());
+    }, 1000);
 
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
   const handleMarkAsDone = async (id) => {
     if (selectedTodo) {
       try {
@@ -229,19 +237,16 @@ function Home() {
   };
   const generateCompletedTasks = () => {
     const sortedCompletedItems = allTodoItems
-      .filter(item => item.value.completed) // Filter items with completed status set to true
+      .filter(item => item.value.completed)
       .sort((a, b) => {
         const dateA = new Date(a.value.created);
         const dateB = new Date(b.value.created);
         return dateA - dateB;
       });
-  
+
     return sortedCompletedItems.map((item, index) => {
       const createdDate = new Date(item.value.created);
-      const currentDate = new Date();
-      const timeDiff = Math.abs(currentDate - createdDate);
-      const daysPassed = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-  
+
       const formattedDate = createdDate.toLocaleString('en-GB', {
         day: '2-digit',
         month: '2-digit',
@@ -249,14 +254,15 @@ function Home() {
         hour: '2-digit',
         minute: '2-digit',
       });
-  
+
+
+
+
       return (
         <tr key={item.id}>
           <td>{index + 1}</td>
           <td>{item.value.title}</td>
           <td>{formattedDate}</td>
-          <td>{item.value.completed ? 'Finished' : 'Pending'}</td>
-          <td>{daysPassed}</td>
           <td>
             <Button onClick={() => handleModalOpen(item)}>Details</Button>
           </td>
@@ -264,10 +270,10 @@ function Home() {
       );
     });
   };
-  
+
   const generateTableRows = () => {
     const sortedItems = allTodoItems
-      .filter(item => !item.value.completed) 
+      .filter(item => !item.value.completed)
       .sort((a, b) => {
         const dateA = new Date(a.value.created);
         const dateB = new Date(b.value.created);
@@ -350,7 +356,7 @@ function Home() {
                         Add New Todo Task
                       </Button>
                     </div>
-                    
+
                   </div>
                 ) : (
                   <div>
@@ -515,16 +521,14 @@ function Home() {
                       <th>#</th>
                       <th>Title</th>
                       <th>Created At</th>
-                      <th>Closed At</th>
-                      <th>Days Passed</th>
                       <th>Manage</th>
                     </tr>
                   </thead>
 
                   <tbody>
-                    
-                     {generateCompletedTasks()}
-                   
+
+                    {generateCompletedTasks()}
+
                   </tbody>
                 </table>
               </div>
@@ -532,6 +536,7 @@ function Home() {
           </div>
         </div>
       </div>
+      <br />
     </div>
   );
 }
