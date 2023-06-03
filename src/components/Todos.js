@@ -46,16 +46,6 @@ function Todos() {
         }
     };
 
-    const handleMarkAsDone = () => {
-        if (selectedTodo) {
-            const updatedTodos = AlltodoItems.map((todo) =>
-                todo.id === selectedTodo.id ? { ...todo, done: true } : todo
-            );
-            setAllTodoItems(updatedTodos);
-            setSelectedTodo(null);
-        }
-    };
-
     const handleModalOpen = (todo) => {
         setSelectedTodo(todo);
     };
@@ -121,6 +111,40 @@ function Todos() {
                 }
             } catch (error) {
                 console.error('Failed to add todo:', error);
+            }
+        }
+    };
+    const handleMarkAsDone = async (id) => {
+        if (selectedTodo) {
+            try {
+                console.log('Marking as done:', selectedTodo);
+
+                const response = await axios.put(
+                    `https://dev.hisptz.com/dhis2/api/dataStore/${process.env.REACT_APP_NAME}/${id}`,
+                    {
+                        ...selectedTodo.value,
+                        completed: true,
+                    },
+                    {
+                        auth: {
+                            username: process.env.REACT_APP_USERNAME,
+                            password: process.env.REACT_APP_PASSWORD,
+                        },
+                    }
+                );
+
+                if (response.status === 200) {
+                    console.log('Todo marked as done successfully!');
+                    fetchData();
+                } else {
+                    console.error(
+                        'Failed to mark todo as done:',
+                        response.status,
+                        response.statusText
+                    );
+                }
+            } catch (error) {
+                console.error('Failed to mark todo as done:', error);
             }
         }
     };
@@ -350,7 +374,7 @@ function Todos() {
                 </Modal.Body>
                 <Modal.Footer>
                     {!selectedTodo?.value.completed && (
-                        <Button variant="success" onClick={handleMarkAsDone}>
+                        <Button variant="success" onClick={() => handleMarkAsDone(selectedTodo?.value.id)}>
                             Mark as Done
                         </Button>
                     )}
