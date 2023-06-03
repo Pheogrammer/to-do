@@ -95,8 +95,6 @@ function Todos() {
                         id: todoId,
                         title: newTodo.title,
                         description: newTodo.description,
-                        dueDate: newTodo.dueDate,
-                        done: newTodo.done,
                     };
                     setAllTodoItems([...AlltodoItems, newTodoItem]);
                     handleAddModalClose();
@@ -192,7 +190,7 @@ function Todos() {
                                                 <th>Title</th>
                                                 <th>Due Date</th>
                                                 <th>Status</th>
-                                                <th>Days Passed</th> {/* New column */}
+                                                <th>Days Passed</th> 
                                                 <th>Manage</th>
                                             </tr>
                                         </thead>
@@ -207,7 +205,7 @@ function Todos() {
             </div>
             <Modal show={showAddModal} onHide={handleAddModalClose}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Add Todo</Modal.Title>
+                    <Modal.Title>Add New Todo</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form>
