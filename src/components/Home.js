@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Form } from 'react-bootstrap';
+import { Modal, Button } from 'react-bootstrap';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import { Link } from 'react-router-dom';
@@ -8,9 +8,16 @@ function Home() {
   const [AlltodoItems, setAllTodoItems] = useState([]);
   const [selectedTodo, setSelectedTodo] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [newTodo, setNewTodo] = useState({ title: '', dueDate: '', done: false, description: '' });
+  const [newTodo, setNewTodo] = useState({
+    title: '',
+    dueDate: '',
+    done: false,
+    description: '',
+  });
   const currentDate = new Date();
-  const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString());
+  const [currentTime, setCurrentTime] = useState(
+    new Date().toLocaleTimeString()
+  );
 
   useEffect(() => {
     fetchData();
@@ -32,7 +39,11 @@ function Home() {
         const data = response.data.entries;
         setAllTodoItems(data);
       } else {
-        console.error('Failed to fetch todo items:', response.status, response.statusText);
+        console.error(
+          'Failed to fetch todo items:',
+          response.status,
+          response.statusText
+        );
       }
     } catch (error) {
       console.error('Failed to fetch todo items:', error);
@@ -102,7 +113,11 @@ function Home() {
           handleAddModalClose();
           fetchData();
         } else {
-          console.error('Failed to add todo:', response.status, response.statusText);
+          console.error(
+            'Failed to add todo:',
+            response.status,
+            response.statusText
+          );
         }
       } catch (error) {
         console.error('Failed to add todo:', error);
@@ -111,13 +126,15 @@ function Home() {
   };
 
   const generateTableRows = () => {
-    const sortedItems = AlltodoItems.sort((a, b) => {
-      const dateA = new Date(a.value.created);
-      const dateB = new Date(b.value.created);
-      return dateA - dateB;
-    });
+    const sortedItems = AlltodoItems
+      .filter((item) => !item.value.completed)
+      .sort((a, b) => {
+        const dateA = new Date(a.value.created);
+        const dateB = new Date(b.value.created);
+        return dateA - dateB;
+      });
 
-    return sortedItems.slice(0, 5).map((item) => {
+    return sortedItems.slice(0, 5).map((item, index) => {
       const createdDate = new Date(item.value.created);
       const currentDate = new Date();
       const timeDiff = Math.abs(currentDate - createdDate);
@@ -133,6 +150,7 @@ function Home() {
 
       return (
         <tr key={item.key}>
+          <td>{index + 1}</td>
           <td>{item.value.title}</td>
           <td>{formattedDate}</td>
           <td>{item.value.completed ? 'Done' : 'Pending'}</td>
@@ -178,6 +196,7 @@ function Home() {
                     <table className="table">
                       <thead>
                         <tr>
+                          <th>#</th>
                           <th>Title</th>
                           <th>Due Date</th>
                           <th>Status</th>

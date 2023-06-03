@@ -115,7 +115,7 @@ function Todos() {
             return dateA - dateB;
         });
 
-        return sortedItems.map((item) => {
+        return sortedItems.map((item, index) => {
             const createdDate = new Date(item.value.created);
             const currentDate = new Date();
             const timeDiff = Math.abs(currentDate - createdDate);
@@ -131,6 +131,7 @@ function Todos() {
 
             return (
                 <tr key={item.key}>
+                    <td>{index + 1}</td>
                     <td>{item.value.title}</td>
                     <td>{formattedDate}</td>
                     <td>{item.value.completed ? 'Done' : 'Pending'}</td>
@@ -142,7 +143,6 @@ function Todos() {
             );
         });
     };
-
 
     return (
         <div>
@@ -187,10 +187,11 @@ function Todos() {
                                     <table className="table">
                                         <thead>
                                             <tr>
+                                                <th>#</th>
                                                 <th>Title</th>
                                                 <th>Due Date</th>
                                                 <th>Status</th>
-                                                <th>Days Passed</th> 
+                                                <th>Days Passed</th>
                                                 <th>Manage</th>
                                             </tr>
                                         </thead>
