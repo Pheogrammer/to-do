@@ -73,7 +73,8 @@ function Home() {
   };
 
   const handleAddTodo = async () => {
-    if (newTodo.title && newTodo.dueDate) {
+    console.log('here');
+    if (newTodo.title && newTodo.description) {
       console.log('Step 1');
       try {
         console.log('step 2');
@@ -119,10 +120,14 @@ function Home() {
             response.status,
             response.statusText
           );
+          handleAddModalClose();
         }
       } catch (error) {
+        handleAddModalClose();
         console.error('Failed to add todo:', error);
       }
+    }else{
+      console.log('failed to add new todo in the first step');
     }
   };
   useEffect(() => {
@@ -169,6 +174,7 @@ function Home() {
       }
     }
   };
+
 
   const handleUpdateTodo = async (id) => {
     if (selectedTodo) {
