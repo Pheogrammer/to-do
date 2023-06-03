@@ -19,21 +19,7 @@ const Navigation = () => {
         <span className="navbar-toggler-icon"></span>
       </button>
 
-      <div className="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul className="navbar-nav ms-auto">
-          <li className={`nav-item ${location.pathname === '/' ? 'active' : ''}`}>
-            <Link className="nav-link" to="/">
-              Home
-            </Link>
-          </li>
-
-          <li className={`nav-item ${location.pathname === '/todos' ? 'active' : ''}`}>
-            <Link className="nav-link" to="/todos">
-              Todo
-            </Link>
-          </li>
-        </ul>
-      </div>
+      
     </nav>
 
   );
