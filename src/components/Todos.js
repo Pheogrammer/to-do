@@ -59,9 +59,13 @@ function Todos() {
     };
 
     const handleAddModalClose = () => {
+        setNewTodo({
+          title: '',
+          description: '',
+          done: false,
+        });
         setShowAddModal(false);
-        setNewTodo({ title: '', dueDate: '', done: false, description: '' });
-    };
+      };
 
     const handleAddTodo = async () => {
         if (newTodo.title && newTodo.dueDate) {
@@ -136,6 +140,7 @@ function Todos() {
                 if (response.status === 200) {
                     console.log('Todo marked as done successfully!');
                     fetchData();
+                    handleModalClose();
                 } else {
                     console.error(
                         'Failed to mark todo as done:',
@@ -168,6 +173,7 @@ function Todos() {
                 if (response.status === 200) {
                     console.log('Todo updated successfully!');
                     fetchData();
+                    handleModalClose();
                 } else {
                     console.error(
                         'Failed to update todo:',
@@ -177,6 +183,39 @@ function Todos() {
                 }
             } catch (error) {
                 console.error('Failed to update todo:', error);
+            }
+        }
+    };
+    const handleDeleteTodo = async (id) => {
+        const confirmed = window.confirm('Are you sure you want to delete this todo item?');
+
+        if (confirmed) {
+            try {
+                console.log('Deleting todo item:', id);
+
+                const response = await axios.delete(
+                    `https://dev.hisptz.com/dhis2/api/dataStore/${process.env.REACT_APP_NAME}/${id}`,
+                    {
+                        auth: {
+                            username: process.env.REACT_APP_USERNAME,
+                            password: process.env.REACT_APP_PASSWORD,
+                        },
+                    }
+                );
+
+                if (response.status === 200) {
+                    console.log('Todo item deleted successfully!');
+                    fetchData();
+                    handleModalClose();
+                } else {
+                    console.error(
+                        'Failed to delete todo item:',
+                        response.status,
+                        response.statusText
+                    );
+                }
+            } catch (error) {
+                console.error('Failed to delete todo item:', error);
             }
         }
     };
@@ -289,6 +328,7 @@ function Todos() {
                             <Form.Label>Title</Form.Label>
                             <Form.Control
                                 type="text"
+                                required
                                 placeholder="Enter title"
                                 value={newTodo.title}
                                 onChange={(e) =>
@@ -300,6 +340,7 @@ function Todos() {
                             <Form.Label>Description</Form.Label>
                             <Form.Control
                                 as="textarea"
+                                required
                                 rows={3}
                                 placeholder="Enter description"
                                 value={newTodo.description}
@@ -330,6 +371,7 @@ function Todos() {
                             <Form.Control
                                 type="text"
                                 name="id"
+                                required
                                 value={selectedTodo?.value.id}
                                 hidden
                                 onChange={(e) =>
@@ -344,6 +386,7 @@ function Todos() {
                             <Form.Label>Title</Form.Label>
                             <Form.Control
                                 type="text"
+                                required
                                 value={selectedTodo?.value.title}
                                 onChange={(e) =>
                                     setSelectedTodo({
@@ -373,14 +416,19 @@ function Todos() {
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
+
+                    <Button variant="primary" onClick={() => handleUpdateTodo(selectedTodo?.value.id)}>
+                        Update
+                    </Button>
                     {!selectedTodo?.value.completed && (
                         <Button variant="success" onClick={() => handleMarkAsDone(selectedTodo?.value.id)}>
                             Mark as Done
                         </Button>
                     )}
-                    <Button variant="primary" onClick={() => handleUpdateTodo(selectedTodo?.value.id)}>
-                        Update
+                    <Button variant="danger" onClick={() => handleDeleteTodo(selectedTodo?.value.id)}>
+                        Delete
                     </Button>
+
                     <Button variant="secondary" onClick={handleModalClose}>
                         Close
                     </Button>
