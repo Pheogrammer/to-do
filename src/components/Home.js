@@ -2,19 +2,45 @@ import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, Alert } from 'react-bootstrap';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
+import Pagination from 'react-js-pagination';
+
 
 function Home() {
   const [allTodoItems, setallTodoItems] = useState([]);
+  const [todosPerPage] = useState(10);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1); // New state for total pages
+  const totalTodos = allTodoItems.length;
+  useEffect(() => {
+    setTotalPages(Math.ceil(allTodoItems.length / todosPerPage));
+  }, [allTodoItems, todosPerPage]);
+
   const [selectedTodo, setSelectedTodo] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const currentDate = new Date();
   const [currentTime, setCurrentTime] = useState(
     new Date().toLocaleTimeString()
   );
+
+
+
+
+  const indexOfLastTodo = currentPage * todosPerPage;
+  const indexOfFirstTodo = indexOfLastTodo - todosPerPage;
+
+  const currentTodos =
+    totalTodos > todosPerPage ? allTodoItems.slice(indexOfFirstTodo, indexOfLastTodo) : allTodoItems;
+
+
+
+
   const deleteMessage = () => {
     setTimeout(() => {
       setMessage(null);
     }, 6000);
+  };
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
   };
   const [newTodo, setNewTodo] = useState({
     title: '',
@@ -128,14 +154,17 @@ function Home() {
           );
           handleAddModalClose();
           setMessage('Failed to add todo.');
+          fetchData();
           deleteMessage();
         }
       } catch (error) {
         handleAddModalClose();
+        fetchData();
         console.error('Failed to add todo:', error);
       }
     } else {
       console.log('failed to add new todo in the first step');
+      fetchData();
     }
   };
   useEffect(() => {
@@ -181,10 +210,12 @@ function Home() {
           );
           handleModalClose();
           setMessage('Failed to mark todo as done.');
+          fetchData();
           deleteMessage();
         }
       } catch (error) {
         console.error('Failed to mark todo as done:', error);
+        fetchData();
       }
     }
   };
@@ -221,11 +252,13 @@ function Home() {
             response.statusText
           );
           setMessage('Failed to mark Todo as Unfinished!');
+          fetchData();
           deleteMessage();
           handleModalClose();
         }
       } catch (error) {
         console.error('Failed to mark todo as undone:', error);
+        fetchData();
       }
     }
   };
@@ -260,11 +293,13 @@ function Home() {
             response.statusText
           );
           setMessage('Failed to update Todo!');
+          fetchData();
           deleteMessage();
           handleModalClose();
         }
       } catch (error) {
         console.error('Failed to update todo:', error);
+        fetchData();
       }
     }
   };
@@ -298,11 +333,13 @@ function Home() {
             response.statusText
           );
           setMessage('Failed to delete Todo!');
+          fetchData();
           deleteMessage();
           handleModalClose();
         }
       } catch (error) {
         console.error('Failed to delete todo item:', error);
+        fetchData();
       }
     }
   };
@@ -457,6 +494,14 @@ function Home() {
 
                     <tbody>{generateTableRows()}</tbody>
                   </table>
+                  <Pagination
+                    activePageNumber={currentPage}
+                    itemsCountPerPage={todosPerPage}
+                    totalItemsCount={totalPages}
+                    pageRangeDisplayed={5}
+                    onChange={handlePageChange}
+                  />
+
                 </div>
               </div>
             </div>
@@ -608,6 +653,14 @@ function Home() {
 
                   </tbody>
                 </table>
+                <Pagination
+                  activePageNumber={currentPage}
+                  itemsCountPerPage={todosPerPage}
+                  totalItemsCount={totalPages}
+                  pageRangeDisplayed={5}
+                  onChange={handlePageChange}
+                />
+
               </div>
             </div>
           </div>
