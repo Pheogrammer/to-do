@@ -6,7 +6,7 @@ const Navigation = () => {
   const location = useLocation();
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-primary px-5">
-      <Link className="navbar-brand" to="/">The Notifier</Link>
+      <Link className="navbar-brand" to="/"></Link>
       <button
         className="navbar-toggler"
         type="button"

@@ -9,7 +9,7 @@ function Home() {
   const [allTodoItems, setallTodoItems] = useState([]);
   const [todosPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1); 
+  const [totalPages, setTotalPages] = useState(1);
   const totalTodos = allTodoItems.length;
   useEffect(() => {
     setTotalPages(Math.ceil(allTodoItems.length / todosPerPage));
@@ -379,48 +379,48 @@ function Home() {
   };
 
   const generateTableRowsForPage = (items, pageNumber) => {
-  const itemsPerPage = 10;
-  const startIndex = (pageNumber - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
+    const itemsPerPage = 10;
+    const startIndex = (pageNumber - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
 
-  const sortedItems = items
-    .filter(item => item.value.completed)
-    .sort((a, b) => {
-      const dateA = new Date(a.value.created);
-      const dateB = new Date(b.value.created);
-      return dateA - dateB;
+    const sortedItems = items
+      .filter(item => item.value.completed)
+      .sort((a, b) => {
+        const dateA = new Date(a.value.created);
+        const dateB = new Date(b.value.created);
+        return dateA - dateB;
+      });
+
+    const paginatedItems = sortedItems.slice(startIndex, endIndex);
+
+    return paginatedItems.map((item, index) => {
+      const createdDate = new Date(item.value.created);
+      const currentDate = new Date();
+      const timeDiff = Math.abs(currentDate - createdDate);
+      const daysPassed = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+
+      const formattedDate = createdDate.toLocaleString('en-GB', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+
+      return (
+        <tr key={item.id}>
+          <td>{index + 1}</td>
+          <td>{item.value.title}</td>
+          <td>{formattedDate}</td>
+          <td>{item.value.completed ? 'Finished' : 'Pending'}</td>
+          <td>{daysPassed}</td>
+          <td>
+            <Button onClick={() => handleModalOpen(item)}>Details</Button>
+          </td>
+        </tr>
+      );
     });
-
-  const paginatedItems = sortedItems.slice(startIndex, endIndex);
-
-  return paginatedItems.map((item, index) => {
-    const createdDate = new Date(item.value.created);
-    const currentDate = new Date();
-    const timeDiff = Math.abs(currentDate - createdDate);
-    const daysPassed = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-
-    const formattedDate = createdDate.toLocaleString('en-GB', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-
-    return (
-      <tr key={item.id}>
-        <td>{index + 1}</td>
-        <td>{item.value.title}</td>
-        <td>{formattedDate}</td>
-        <td>{item.value.completed ? 'Finished' : 'Pending'}</td>
-        <td>{daysPassed}</td>
-        <td>
-          <Button onClick={() => handleModalOpen(item)}>Details</Button>
-        </td>
-      </tr>
-    );
-  });
-};
+  };
 
 
   const generateTableRows = () => {
@@ -522,7 +522,7 @@ function Home() {
                   </div>
                 )}
                 <div className="card-body">
-                  <table className="table text-left">
+                  <table className="table text-left table-bordered table-hover">
                     <thead>
                       <tr>
                         <th>#</th>
@@ -534,7 +534,7 @@ function Home() {
                       </tr>
                     </thead>
 
-                    <tbody>{generateTableRows()}</tbody>
+                    <tbody className='table-striped'>{generateTableRows()}</tbody>
                   </table>
                   <Pagination
                     activePage={currentPage}
@@ -675,10 +675,23 @@ function Home() {
           <div className="col">
             <div className="card">
               <div className="card-head text-center mt-3">
-                <h4>Completed Todos</h4>
+                <div className="row">
+                  <div className='col'>
+                    <h4>Completed Todos</h4>
+
+                  </div>
+                  <div className="col-md-4">
+                    <Button
+                      variant="success"
+                      onClick={handleAddModalOpen}
+                    >
+                      Add New Todo Task
+                    </Button>
+                  </div>
+                </div>
               </div>
               <div className="card-body text-center">
-                <table className="table">
+                <table className="table table-bordered table-hover">
                   <thead>
                     <tr>
                       <th>#</th>
@@ -688,7 +701,7 @@ function Home() {
                     </tr>
                   </thead>
 
-                  <tbody>
+                  <tbody className='table-striped '>
 
                     {generateCompletedTasks()}
 
