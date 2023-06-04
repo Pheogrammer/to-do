@@ -346,9 +346,9 @@ function Home() {
     const sortedCompletedItems = allTodoItems
       .filter(item => item.value.completed)
       .sort((a, b) => {
-        const dateA = new Date(a.value.created);
-        const dateB = new Date(b.value.created);
-        return dateA - dateB;
+        const tarehe2 = new Date(a.value.created);
+        const tarehe1 = new Date(b.value.created);
+        return tarehe2 - tarehe1;
       });
 
     return sortedCompletedItems.map((item, index) => {
@@ -386,9 +386,9 @@ function Home() {
     const sortedItems = items
       .filter(item => item.value.completed)
       .sort((a, b) => {
-        const dateA = new Date(a.value.created);
-        const dateB = new Date(b.value.created);
-        return dateA - dateB;
+        const tarehe2 = new Date(a.value.created);
+        const tarehe1 = new Date(b.value.created);
+        return tarehe2 - tarehe1;
       });
 
     const paginatedItems = sortedItems.slice(startIndex, endIndex);
@@ -427,9 +427,9 @@ function Home() {
     const sortedItems = currentTodos
       .filter(item => !item.value.completed)
       .sort((a, b) => {
-        const dateA = new Date(a.value.created);
-        const dateB = new Date(b.value.created);
-        return dateA - dateB;
+        const tarehe2 = new Date(a.value.created);
+        const tarehe1 = new Date(b.value.created);
+        return tarehe2 - tarehe1;
       });
 
     return sortedItems.map((item, index) => {
@@ -716,7 +716,7 @@ function Home() {
                   pageRangeDisplayed={5}
                   onChange={handlePageChange}
                   itemClass="page-item"
-                    linkClass="page-link"
+                  linkClass="page-link"
                 />
               </div>
             </div>
