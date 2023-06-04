@@ -542,6 +542,8 @@ function Home() {
                     totalItemsCount={totalTodos}
                     pageRangeDisplayed={5}
                     onChange={handlePageChange}
+                    itemClass="page-item"
+                    linkClass="page-link"
                   />
                 </div>
               </div>
@@ -713,6 +715,8 @@ function Home() {
                   totalItemsCount={totalTodos}
                   pageRangeDisplayed={5}
                   onChange={handlePageChange}
+                  itemClass="page-item"
+                    linkClass="page-link"
                 />
               </div>
             </div>
