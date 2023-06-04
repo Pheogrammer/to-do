@@ -9,7 +9,7 @@ function Home() {
   const [allTodoItems, setallTodoItems] = useState([]);
   const [todosPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1); // New state for total pages
+  const [totalPages, setTotalPages] = useState(1); 
   const totalTodos = allTodoItems.length;
   useEffect(() => {
     setTotalPages(Math.ceil(allTodoItems.length / todosPerPage));
