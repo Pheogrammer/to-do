@@ -521,8 +521,8 @@ function Home() {
                     </div>
                   </div>
                 )}
-                <div className="card-body">
-                  <table className="table text-left table-bordered table-hover">
+                <div className="card-body table-responsive">
+                  <table className="table text-left table-bordered table-hover ">
                     <thead>
                       <tr>
                         <th>#</th>
@@ -692,7 +692,7 @@ function Home() {
                   </div>
                 </div>
               </div>
-              <div className="card-body text-center">
+              <div className="card-body text-center table-responsive">
                 <table className="table table-bordered table-hover">
                   <thead>
                     <tr>
